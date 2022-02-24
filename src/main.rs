@@ -129,8 +129,10 @@ where
     }
 
     if let Some(mut v) = result {
-        // now try to push the block further
-        // don’t normalize yet as that could rename the block
+        // now try to push the block further, as continuing to move
+        // the same block counts as one “move”
+
+        // note: don’t normalize yet as that could rename the block
         for d in DELTAS {
             // don’t go back to previous position
             // NB: if there are enough spaces on the board this doesn’t work
@@ -147,6 +149,8 @@ where
     }
 }
 
+// normalize renames all fungible blocks so that we can reduce
+// the number of states. this reduces the search space dramatically
 fn normalize(b: &mut Board) {
     let mut count: u8 = 0;
     let mut lookup = HashMap::new();
@@ -166,6 +170,8 @@ fn normalize(b: &mut Board) {
 
 const DELTAS: &[(i32, i32)] = &[(0, 1), (0, -1), (1, 0), (-1, 0)];
 
+// the idea here is to look for spaces and then check each piece type around that space
+// since the number of spaces in a sliding-block game is (usually!) small
 fn perform_moves<const N: usize>(board: &Board, out: &mut SmallVec<[Board; N]>)
 where
     [Board; N]: Array<Item = Board>,
@@ -200,7 +206,7 @@ where
 // a # is a wall, must be around outside,
 // a space is free space,
 // capital letters are blocks with identity (non-fungible),
-// lowercase letters or numbers are blocks without identity (can be interchanged).
+// lowercase letters or numbers etc are blocks without identity (can be interchanged).
 //
 // In the target, spaces are ignored.
 const TESTS: &[(&str, &str)] = &[
