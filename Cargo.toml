@@ -6,6 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+auto_enums = "0.7.12"
+criterion = "0.3.5"
 itertools = "0.10.3"
 pathfinding = "3.0.10"
 smallvec = "1.8"
+
+[profile.release]
+debug = true
+# strip = true
+
+[[bench]]
+name = "bench"
+harness = false
